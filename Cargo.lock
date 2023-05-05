@@ -670,6 +670,8 @@ name = "nova-ml"
 version = "0.1.0"
 dependencies = [
  "nova-scotia",
+ "nova-snark",
+ "serde_json",
 ]
 
 [[package]]
