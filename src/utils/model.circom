@@ -1,12 +1,12 @@
 pragma circom 2.0.0;
 
-include "../node_modules/circomlib-ml/circuits/BatchNormalization2D.circom";
-include "../node_modules/circomlib-ml/circuits/Dense.circom";
-include "../node_modules/circomlib-ml/circuits/Conv2D.circom";
-include "../node_modules/circomlib-ml/circuits/AveragePooling2D.circom";
-include "../node_modules/circomlib-ml/circuits/ArgMax.circom";
-include "../node_modules/circomlib-ml/circuits/Poly.circom";
-include "../node_modules/circomlib-ml/circuits/GlobalAveragePooling2D.circom";
+include "../../node_modules/circomlib-ml/circuits/BatchNormalization2D.circom";
+include "../../node_modules/circomlib-ml/circuits/Dense.circom";
+include "../../node_modules/circomlib-ml/circuits/Conv2D.circom";
+include "../../node_modules/circomlib-ml/circuits/AveragePooling2D.circom";
+include "../../node_modules/circomlib-ml/circuits/ArgMax.circom";
+include "../../node_modules/circomlib-ml/circuits/Poly.circom";
+include "../../node_modules/circomlib-ml/circuits/GlobalAveragePooling2D.circom";
 
 template Model() {
 signal input in[28][28][1];

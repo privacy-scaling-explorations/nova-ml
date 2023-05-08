@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/socathie/nova-ml#readme",
   "dependencies": {
+    "circomlib": "^2.0.5",
     "circomlib-ml": "^1.4.4"
   }
 }
