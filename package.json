@@ -1,0 +1,23 @@
+{
+  "name": "nova-ml",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/socathie/nova-ml.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/socathie/nova-ml/issues"
+  },
+  "homepage": "https://github.com/socathie/nova-ml#readme",
+  "dependencies": {
+    "circomlib-ml": "^1.4.4"
+  }
+}
