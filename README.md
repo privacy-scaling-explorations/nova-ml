@@ -2,6 +2,10 @@
 
 nova-ml is a library for building recursive circuits for folding batch inference in zero-knowledge machine learning.
 
+## Reference
+
+The thought process behind this library is described in the document [Folding Circom circuits: a ZKML case study](https://hackmd.io/@cathie/zkml-folding).
+
 ## Setup
 
 ```bash
