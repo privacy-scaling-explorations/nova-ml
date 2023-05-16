@@ -30,7 +30,7 @@ template MerkleTreeUpdater(levels) {
     treeAfter.root === newRoot;
 }
 
-component main = MerkleTreeUpdater(2);
+// component main = MerkleTreeUpdater(2);
 
 /* INPUT = {
     "oldRoot": "7423237065226347324353380772367382631490014989348495481811164164159255474657",
