@@ -6,6 +6,7 @@ use nova_scotia::{
 };
 use nova_snark::{traits::Group, CompressedSNARK};
 use serde_json::json;
+use ff::PrimeField;
 
 pub fn main() {
     let iteration_count = 5;
@@ -23,7 +24,7 @@ pub fn main() {
         private_inputs.push(private_input);
     }
 
-    let start_public_input = vec![F1::from(10), F1::from(10)];
+    let start_public_input = vec![F1::from_str_vartime("10").unwrap(), F1::from_str_vartime("10").unwrap()];
 
     let pp = create_public_params(r1cs.clone());
 
