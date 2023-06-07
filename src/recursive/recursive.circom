@@ -155,8 +155,8 @@ template Recursive () {
     for (var i = idx; i < 1000; i++) {
         mimc.in[i] <== 0;
     }
-
     step_out[0] <== mimc.out;
+    log(step_out[0]);
     step_in[0] === step_out[0];
 
     poseidon[0] = Poseidon(3);
@@ -166,13 +166,11 @@ template Recursive () {
     poseidon[0].inputs[1] <== cid_out[0];
     poseidon[0].inputs[2] <== cid_out[1];
     step_out[1] <== poseidon[0].out;
+    log(step_out[1]);
 
     poseidon[1].inputs[0] <== step_in[2];
     poseidon[1].inputs[1] <== model_out;
     step_out[2] <== poseidon[1].out;
-
-    log(step_out[0]);
-    log(step_out[1]);
     log(step_out[2]);
 }
 

@@ -1,5 +1,5 @@
-mod toy;
+mod recursive;
 
 fn main() {
-    toy::main();
+    recursive::main();
 }
