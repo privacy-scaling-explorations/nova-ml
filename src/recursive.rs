@@ -1,12 +1,12 @@
-use std::{collections::HashMap, env::current_dir, time::Instant, fs::File, io::BufReader};
+use std::{collections::HashMap, env::current_dir, fs::File, io::BufReader, time::Instant};
 
+use ff::PrimeField;
 use nova_scotia::{
     circom::reader::load_r1cs, create_public_params, create_recursive_circuit, FileLocation, F1,
     G2, S1, S2,
 };
 use nova_snark::{traits::Group, CompressedSNARK};
-use serde_json::{Value, from_reader};
-use ff::PrimeField;
+use serde_json::{from_reader, Value};
 
 pub fn main() {
     let iteration_count = 5;
@@ -28,7 +28,14 @@ pub fn main() {
         private_inputs.push(json.clone());
     }
 
-    let start_public_input = vec![F1::from_str_vartime("9046494323512618473441251792600205790522500136671742160573113950083932095915").unwrap(), F1::from_str_vartime("0").unwrap(), F1::from_str_vartime("0").unwrap()];
+    let start_public_input = vec![
+        F1::from_str_vartime(
+            "9046494323512618473441251792600205790522500136671742160573113950083932095915",
+        )
+        .unwrap(),
+        F1::from_str_vartime("0").unwrap(),
+        F1::from_str_vartime("0").unwrap(),
+    ];
 
     let pp = create_public_params(r1cs.clone());
 
