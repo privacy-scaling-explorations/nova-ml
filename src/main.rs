@@ -1,5 +1,5 @@
-mod recursive;
+mod conv2d;
 
 fn main() {
-    recursive::main();
+    conv2d::main();
 }
