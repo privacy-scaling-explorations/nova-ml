@@ -16,7 +16,7 @@ pub fn main() {
     let r1cs = load_r1cs(&FileLocation::PathBuf(circuit_file));
     let witness_generator_wasm = root.join("src/recursive/recursive_js/recursive.wasm");
 
-    let json_filename = root.join("src/input.json");
+    let json_filename = root.join("src/recursive/input.json");
     let json_file = File::open(json_filename).unwrap();
     let json_reader = BufReader::new(json_file);
     let json: HashMap<String, Value> = from_reader(json_reader).unwrap();
