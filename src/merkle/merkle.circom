@@ -162,6 +162,7 @@ template Merkle (levels) {
     }
 
     step_out[0] <== mimc.out;
+    log(step_out[0]);
     step_in[0] === step_out[0];
 
     component dataTree = MerkleTreeUpdater(levels);
@@ -173,6 +174,7 @@ template Merkle (levels) {
         dataTree.pathElements[i] <== dataPathElements[i];
     }
     step_out[1] <== dataTree.newRoot;
+    log(step_out[1]);
 
     component outTree = MerkleTreeUpdater(levels);
     outTree.oldRoot <== step_in[2];
@@ -184,6 +186,7 @@ template Merkle (levels) {
     }
     
     step_out[2] <== outTree.newRoot;
+    log(step_out[2]);
 }
 
 component main { public [step_in] } = Merkle(2);
