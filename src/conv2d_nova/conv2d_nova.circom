@@ -3,7 +3,7 @@ pragma circom 2.0.0;
 include "../../node_modules/circomlib-ml/circuits/circomlib-matrix/matElemMul.circom";
 include "../../node_modules/circomlib-ml/circuits/circomlib-matrix/matElemSum.circom";
 include "../../node_modules/circomlib-ml/circuits/util.circom";
-include "../../node_modules/circomlib/circuits/Mux1.circom";
+include "../../node_modules/circomlib/circuits/mux1.circom";
 
 template Main (nRows, nCols, nChannels, nFilters, kernelSize, strides) {
     signal input step_in[(nRows-kernelSize)\strides+1][(nCols-kernelSize)\strides+1][nFilters];
