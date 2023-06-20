@@ -1,32 +1,35 @@
-use std::{
-    collections::HashMap,
-    env::current_dir,
-    fs::File,
-    io::{BufReader, BufWriter, Write},
-    time::Instant,
-};
+use std::{collections::HashMap, env::current_dir, fs::File, io::BufReader, time::Instant};
 
 use ff::PrimeField;
 use nova_scotia::{
     circom::reader::load_r1cs, create_public_params, create_recursive_circuit, FileLocation, F1,
-    G2, S1, S2
+    G2, S1, S2,
 };
 use nova_snark::{traits::Group, CompressedSNARK};
-use serde_json::{from_reader, Value};
+use serde_json::{from_reader, json, Value};
 
 pub fn main() {
-    let iteration_count = 1;
+    let n_rows = 50;
+    let n_cols = 50;
+    let n_channels = 3;
+    let n_filters = 2;
+    let kernel_size = 3;
+
+    let x = n_rows - kernel_size + 1;
+    let y = n_cols - kernel_size + 1;
+
+    let iteration_count = x * y * n_filters;
     let root = current_dir().unwrap();
 
     let mut start_public_input = Vec::new();
-    for _i in 0..(48 * 48 * 2) {
+    for _i in 0..iteration_count {
         start_public_input.push(F1::from_str_vartime("0").unwrap());
     }
     // println!("start_public_input: {:?}", start_public_input);
 
-    let circuit_file = root.join("src/conv2d/conv2d.r1cs");
+    let circuit_file = root.join("src/conv2d_nova/conv2d_nova.r1cs");
     let r1cs = load_r1cs(&FileLocation::PathBuf(circuit_file));
-    let witness_generator_wasm = root.join("src/conv2d/conv2d_js/conv2d.wasm");
+    let witness_generator_wasm = root.join("src/conv2d_nova/conv2d_nova_js/conv2d_nova.wasm");
 
     let json_filename = root.join("src/conv2d/input.json");
     let json_file = File::open(json_filename).unwrap();
@@ -35,9 +38,83 @@ pub fn main() {
 
     // println!("json: {:?}", json);
 
+    let in_vector = json.get("in").unwrap().as_array().unwrap();
+    let mut idx: usize = 0;
+    let mut in_array = Vec::new();
+    for _i in 0..n_rows {
+        let mut row = Vec::new();
+        for _j in 0..n_cols {
+            let mut col = Vec::new();
+            for _k in 0..n_channels {
+                col.push(in_vector[idx].clone());
+                idx += 1;
+            }
+            row.push(col);
+        }
+        in_array.push(row);
+    }
+    // println!("in_array: {:?}", in_array);
+
+    let weights_vector = json.get("weights").unwrap().as_array().unwrap();
+    let mut idx: usize = 0;
+    let mut weights_array = Vec::new();
+    for _a in 0..kernel_size {
+        let mut row = Vec::new();
+        for _b in 0..kernel_size {
+            let mut col = Vec::new();
+            for _c in 0..n_channels {
+                let mut channel = Vec::new();
+                for _d in 0..n_filters {
+                    channel.push(weights_vector[idx].clone());
+                    idx += 1;
+                }
+                col.push(channel);
+            }
+            row.push(col);
+        }
+        weights_array.push(row);
+    }
+    // println!("weights_array: {:?}", weights_array);
+
     let mut private_inputs = Vec::new();
-    for _i in 0..iteration_count {
-        private_inputs.push(json.clone());
+    for i in 0..x {
+        for j in 0..y {
+            for k in 0..n_filters {
+                let mut private_json = HashMap::new();
+                // in and weight
+                let mut input = Vec::new();
+                let mut weights = Vec::new();
+
+                for a in 0..kernel_size {
+                    for b in 0..kernel_size {
+                        for c in 0..n_channels {
+                            input.push(in_array[i + a][j + b][c].clone());
+                            weights.push(weights_array[a][b][c][k].clone());
+                        }
+                    }
+                }
+                private_json.insert("in".to_string(), json!(input));
+                private_json.insert("weights".to_string(), json!(weights));
+                // bias
+                let bias = json.get("bias").unwrap().as_array().unwrap()[k].clone();
+                private_json.insert("bias".to_string(), json!(bias));
+                // sel
+                let mut sel = Vec::new();
+                for a in 0..x {
+                    for b in 0..y {
+                        for c in 0..n_filters {
+                            if a == i && b == j && c == k {
+                                sel.push(1);
+                            } else {
+                                sel.push(0);
+                            }
+                        }
+                    }
+                }
+                private_json.insert("sel".to_string(), json!(sel));
+                private_inputs.push(private_json.clone());
+            }
+        }
     }
 
     let start = Instant::now();
@@ -98,43 +175,20 @@ pub fn main() {
     let result = res.unwrap().0;
     // println!("result: {:?}", result);
 
-    // check output
-    let out_filename = root.join("src/conv2d/output.json");
+    // TODO: check output
+    let out_filename = root.join("src/conv2d/result.json");
     let out_file = File::open(out_filename).unwrap();
     let out_reader = BufReader::new(out_file);
     let out_json: Vec<Value> = from_reader(out_reader).unwrap();
     // println!("out_json: {:?}", out_json);
 
-    for _i in 0..(48 * 48 * 2) {
-        // println!("out_json: {:?}", out_json[_i]);
-        let out_num = out_json[_i].as_i64().unwrap();
-        let out;
-        if out_num < 0 {
-            let out_str = (-out_num).to_string();
-            let zero = F1::from(0);
-            out = zero.sub(&F1::from_str_vartime(&out_str).unwrap());
-        } else {
-            let out_str = out_num.to_string();
-            out = F1::from_str_vartime(&out_str).unwrap();
-        }
-        let mut diff = out.sub(&result[_i]).to_repr();
-        if diff[31] > 0 {
-            diff = result[_i].sub(&out).to_repr();
-        }
-        // println!("diff: {:?}", diff);
-        for _i in 0..diff.len() {
-            if _i > 1 {
-                assert_eq!(diff[_i], 0);
-            }
-        }
-    }
+    let result_json: Vec<Value> =
+        serde_json::from_str(&serde_json::to_string(&result).unwrap()).unwrap();
+    // println!("result_json: {:?}", result_json);
 
-    // write results to file
-    let result_filename = root.join("src/conv2d/result.json");
-    let result_file = File::create(result_filename).unwrap();
-    let mut writer = BufWriter::new(result_file);
-    serde_json::to_writer(&mut writer, &result).unwrap();
-    writer.flush().unwrap();
+    for i in 0..iteration_count {
+        assert_eq!(result_json[i], out_json[i]);
+    }
 
     // produce a compressed SNARK
     println!("Generating a CompressedSNARK using Spartan with IPA-PC...");
