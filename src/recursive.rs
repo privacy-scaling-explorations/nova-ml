@@ -9,7 +9,7 @@ use nova_snark::{traits::Group, CompressedSNARK};
 use serde_json::{from_reader, Value};
 
 pub fn main() {
-    let iteration_count = 5;
+    let iteration_count = 2;
     let root = current_dir().unwrap();
 
     let circuit_file = root.join("src/recursive/recursive.r1cs");
@@ -25,7 +25,13 @@ pub fn main() {
 
     let mut private_inputs = Vec::new();
     for _i in 0..iteration_count {
-        private_inputs.push(json.clone());
+        let in_filename = root.join("assets/mnist_".to_owned() + &_i.to_string() + ".json");
+        let in_file = File::open(in_filename).unwrap();
+        let in_reader = BufReader::new(in_file);
+        let mut in_json: HashMap<String, Value> = from_reader(in_reader).unwrap();
+        in_json.extend(json.clone());
+        private_inputs.push(in_json.clone());
+        // println!("in_json: {:?}", in_json);
     }
 
     let start_public_input = vec![
