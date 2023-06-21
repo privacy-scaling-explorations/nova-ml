@@ -24,8 +24,8 @@ pub fn main() {
     // println!("json: {:?}", json);
 
     let mut private_inputs = Vec::new();
-    for _i in 0..iteration_count {
-        let in_filename = root.join("assets/mnist_".to_owned() + &_i.to_string() + ".json");
+    for i in 0..iteration_count {
+        let in_filename = root.join("assets/mnist_".to_owned() + &i.to_string() + ".json");
         let in_file = File::open(in_filename).unwrap();
         let in_reader = BufReader::new(in_file);
         let mut in_json: HashMap<String, Value> = from_reader(in_reader).unwrap();
