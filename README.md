@@ -9,7 +9,13 @@ The thought process behind this library is described in the document [Folding Ci
 ## Setup
 
 ```bash
+git clone https://github.com/nalinbhardwaj/circom.git
+cd circom
+git checkout pasta
+cargo install --path circom
+cd ..
 npm install
+./compile.sh
 cargo build
 ```
 
