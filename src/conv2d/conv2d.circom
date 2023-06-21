@@ -44,4 +44,4 @@ template Main (nRows, nCols, nChannels, nFilters, kernelSize, strides) {
     }
 }
 
-component main { public [step_in] } = Main(50,50,3,2,3,1);
+component main { public [step_in] } = Main(32,32,3,2,3,1);

@@ -9,8 +9,8 @@ use nova_snark::{traits::Group, CompressedSNARK};
 use serde_json::{from_reader, json, Value};
 
 pub fn main() {
-    let n_rows = 50;
-    let n_cols = 50;
+    let n_rows = 32;
+    let n_cols = 32;
     let n_channels = 3;
     let n_filters = 2;
     let kernel_size = 3;

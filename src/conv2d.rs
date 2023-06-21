@@ -18,8 +18,12 @@ pub fn main() {
     let iteration_count = 1;
     let root = current_dir().unwrap();
 
+    let x = 30;
+    let y = 30;
+    let n_filters = 2;
+
     let mut start_public_input = Vec::new();
-    for _i in 0..(48 * 48 * 2) {
+    for _i in 0..(x * y * n_filters) {
         start_public_input.push(F1::from_str_vartime("0").unwrap());
     }
     // println!("start_public_input: {:?}", start_public_input);
@@ -105,7 +109,7 @@ pub fn main() {
     let out_json: Vec<Value> = from_reader(out_reader).unwrap();
     // println!("out_json: {:?}", out_json);
 
-    for _i in 0..(48 * 48 * 2) {
+    for _i in 0..(x * y * n_filters) {
         // println!("out_json: {:?}", out_json[_i]);
         let out_num = out_json[_i].as_i64().unwrap();
         let out;
