@@ -1,6 +1,6 @@
 use std::env;
 
-// mod merkle;
+mod merkle;
 mod recursive;
 mod conv2d;
 mod conv2d_nova;
@@ -18,7 +18,7 @@ fn main() {
     if example == "recursive" {
         recursive::main();
     } else if example == "merkle" {
-        // merkle::main();
+        merkle::main();
     } else if example == "conv2d" {
         conv2d::main();
     } else if example == "conv2d_nova" {
