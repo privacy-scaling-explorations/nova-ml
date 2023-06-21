@@ -9,7 +9,7 @@ use nova_snark::{traits::Group, CompressedSNARK};
 use serde_json::{from_reader, Value};
 
 pub fn main() {
-    let iteration_count = 2;
+    let iteration_count = 100;
     let root = current_dir().unwrap();
 
     let circuit_file = root.join("src/recursive/recursive.r1cs");
