@@ -4,6 +4,7 @@ mod merkle;
 mod recursive;
 mod conv2d;
 mod conv2d_nova;
+mod rnn;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -23,6 +24,8 @@ fn main() {
         conv2d::main();
     } else if example == "conv2d_nova" {
         conv2d_nova::main();
+    } else if example == "rnn" {
+        rnn::main();
     } else {
         println!("Please provide a valid example name");
     }
