@@ -27,10 +27,15 @@ pub fn main() {
     let params_reader = BufReader::new(params_file);
     let params: HashMap<String, Value> = from_reader(params_reader).unwrap();
 
-    let bias_filename = root.join("src/rnn/bias.json");
-    let bias_file = File::open(bias_filename).unwrap();
-    let bias_reader = BufReader::new(bias_file);
-    let bias_json: Vec<Value> = from_reader(bias_reader).unwrap();
+    let out_filename = root.join("src/rnn/out.json");
+    let out_file = File::open(out_filename).unwrap();
+    let out_reader = BufReader::new(out_file);
+    let out_json: Vec<Value> = from_reader(out_reader).unwrap();
+
+    let remainder_filename = root.join("src/rnn/remainder.json");
+    let remainder_file = File::open(remainder_filename).unwrap();
+    let remainder_reader = BufReader::new(remainder_file);
+    let remainder_json: Vec<Value> = from_reader(remainder_reader).unwrap();
 
     let in_filename = root.join("src/rnn/in.json");
     let in_file = File::open(in_filename).unwrap();
@@ -41,7 +46,8 @@ pub fn main() {
     for i in 0..iteration_count {
         let mut json = params.clone();
         json.insert("in".to_string(), in_json[i].clone());
-        json.insert("b".to_string(), bias_json[i].clone());
+        json.insert("out".to_string(), out_json[i].clone());
+        json.insert("remainder".to_string(), remainder_json[i].clone());
         private_inputs.push(json.clone());
     }
 
@@ -107,31 +113,20 @@ pub fn main() {
 
     let result  = res.unwrap().0;
 
-    let out_filename = root.join("src/rnn/out.json");
-    let out_file = File::open(out_filename).unwrap();
-    let out_reader = BufReader::new(out_file);
-    let out_json: Vec<Value> = from_reader(out_reader).unwrap();
-
-    // println!("{:?}", out_json);
+    // println!("{:?}", out_json[11]);
 
     for i in 0..3 {
         let out;
-        if out_json[i].as_str().unwrap().starts_with("-") {
-            let out_str = out_json[i].as_str().unwrap()[1..].to_string();
+        if out_json[11][i].as_str().unwrap().starts_with("-") {
+            let out_str = out_json[11][i].as_str().unwrap()[1..].to_string();
             out = F1::zero() - F1::from_str_vartime(&out_str).unwrap();
         } else {
-            let out_str = out_json[i].as_str().unwrap();
+            let out_str = out_json[11][i].as_str().unwrap();
             out = F1::from_str_vartime(&out_str).unwrap();
         }
-        let mut diff = out.sub(&result[i]).to_repr();
-        if diff[31] > 0 {
-            diff = result[i].sub(&out).to_repr();
-        }
-        // println!("diff: {:?}", diff);
-        for _i in 0..diff.len() {
-            if _i >= 16 {
-                assert_eq!(diff[_i], 0);
-            }
+        let diff = out.sub(&result[i]).to_repr();
+        for j in 0..diff.len() {
+            assert_eq!(diff[j], 0);
         }
     }
 
