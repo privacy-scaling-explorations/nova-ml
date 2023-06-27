@@ -5,6 +5,7 @@ mod recursive;
 mod conv2d;
 mod conv2d_nova;
 mod rnn;
+mod lstm;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -26,6 +27,8 @@ fn main() {
         conv2d_nova::main();
     } else if example == "rnn" {
         rnn::main();
+    } else if example == "lstm" {
+        lstm::main();
     } else {
         println!("Please provide a valid example name");
     }
