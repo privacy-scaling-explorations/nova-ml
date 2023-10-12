@@ -27,15 +27,25 @@ pub fn main() {
     let params_reader = BufReader::new(params_file);
     let params: HashMap<String, Value> = from_reader(params_reader).unwrap();
 
-    let out_filename = root.join("src/rnn/out.json");
-    let out_file = File::open(out_filename).unwrap();
-    let out_reader = BufReader::new(out_file);
-    let out_json: Vec<Value> = from_reader(out_reader).unwrap();
+    let matmul_out_filename = root.join("src/rnn/matmul_out.json");
+    let matmul_out_file = File::open(matmul_out_filename).unwrap();
+    let matmul_out_reader = BufReader::new(matmul_out_file);
+    let matmul_out_json: Vec<Value> = from_reader(matmul_out_reader).unwrap();
 
-    let remainder_filename = root.join("src/rnn/remainder.json");
-    let remainder_file = File::open(remainder_filename).unwrap();
-    let remainder_reader = BufReader::new(remainder_file);
-    let remainder_json: Vec<Value> = from_reader(remainder_reader).unwrap();
+    let matmul_remainder_filename = root.join("src/rnn/matmul_remainder.json");
+    let matmul_remainder_file = File::open(matmul_remainder_filename).unwrap();
+    let matmul_remainder_reader = BufReader::new(matmul_remainder_file);
+    let matmul_remainder_json: Vec<Value> = from_reader(matmul_remainder_reader).unwrap();
+
+    let zanh_out_filename = root.join("src/rnn/zanh_out.json");
+    let zanh_out_file = File::open(zanh_out_filename).unwrap();
+    let zanh_out_reader = BufReader::new(zanh_out_file);
+    let zanh_out_json: Vec<Value> = from_reader(zanh_out_reader).unwrap();
+
+    let zanh_remainder_filename = root.join("src/rnn/zanh_remainder.json");
+    let zanh_remainder_file = File::open(zanh_remainder_filename).unwrap();
+    let zanh_remainder_reader = BufReader::new(zanh_remainder_file);
+    let zanh_remainder_json: Vec<Value> = from_reader(zanh_remainder_reader).unwrap();
 
     let in_filename = root.join("src/rnn/in.json");
     let in_file = File::open(in_filename).unwrap();
@@ -46,8 +56,10 @@ pub fn main() {
     for i in 0..iteration_count {
         let mut json = params.clone();
         json.insert("in".to_string(), in_json[i].clone());
-        json.insert("out".to_string(), out_json[i].clone());
-        json.insert("remainder".to_string(), remainder_json[i].clone());
+        json.insert("matmul_out".to_string(), matmul_out_json[i].clone());
+        json.insert("matmul_remainder".to_string(), matmul_remainder_json[i].clone());
+        json.insert("zanh_out".to_string(), zanh_out_json[i].clone());
+        json.insert("zanh_remainder".to_string(), zanh_remainder_json[i].clone());
         private_inputs.push(json.clone());
     }
 
@@ -117,11 +129,11 @@ pub fn main() {
 
     for i in 0..3 {
         let out;
-        if out_json[11][i].as_str().unwrap().starts_with("-") {
-            let out_str = out_json[11][i].as_str().unwrap()[1..].to_string();
+        if zanh_out_json[11][i].as_str().unwrap().starts_with("-") {
+            let out_str = zanh_out_json[11][i].as_str().unwrap()[1..].to_string();
             out = F1::zero() - F1::from_str_vartime(&out_str).unwrap();
         } else {
-            let out_str = out_json[11][i].as_str().unwrap();
+            let out_str = zanh_out_json[11][i].as_str().unwrap();
             out = F1::from_str_vartime(&out_str).unwrap();
         }
         let diff = out.sub(&result[i]).to_repr();
