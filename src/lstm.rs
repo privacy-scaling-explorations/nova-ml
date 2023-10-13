@@ -37,6 +37,16 @@ pub fn main() {
     let f_remainder_reader = BufReader::new(f_remainder_file);
     let f_remainder_json: Vec<Value> = from_reader(f_remainder_reader).unwrap();
 
+    let f_zigmoid_out_filename = root.join("src/lstm/f_zigmoid_out.json");
+    let f_zigmoid_out_file = File::open(f_zigmoid_out_filename).unwrap();
+    let f_zigmoid_out_reader = BufReader::new(f_zigmoid_out_file);
+    let f_zigmoid_out_json: Vec<Value> = from_reader(f_zigmoid_out_reader).unwrap();
+
+    let f_zigmoid_remainder_filename = root.join("src/lstm/f_zigmoid_remainder.json");
+    let f_zigmoid_remainder_file = File::open(f_zigmoid_remainder_filename).unwrap();
+    let f_zigmoid_remainder_reader = BufReader::new(f_zigmoid_remainder_file);
+    let f_zigmoid_remainder_json: Vec<Value> = from_reader(f_zigmoid_remainder_reader).unwrap();
+
     let i_out_filename = root.join("src/lstm/i_out.json");
     let i_out_file = File::open(i_out_filename).unwrap();
     let i_out_reader = BufReader::new(i_out_file);
@@ -46,6 +56,16 @@ pub fn main() {
     let i_remainder_file = File::open(i_remainder_filename).unwrap();
     let i_remainder_reader = BufReader::new(i_remainder_file);
     let i_remainder_json: Vec<Value> = from_reader(i_remainder_reader).unwrap();
+
+    let i_zigmoid_out_filename = root.join("src/lstm/i_zigmoid_out.json");
+    let i_zigmoid_out_file = File::open(i_zigmoid_out_filename).unwrap();
+    let i_zigmoid_out_reader = BufReader::new(i_zigmoid_out_file);
+    let i_zigmoid_out_json: Vec<Value> = from_reader(i_zigmoid_out_reader).unwrap();
+
+    let i_zigmoid_remainder_filename = root.join("src/lstm/i_zigmoid_remainder.json");
+    let i_zigmoid_remainder_file = File::open(i_zigmoid_remainder_filename).unwrap();
+    let i_zigmoid_remainder_reader = BufReader::new(i_zigmoid_remainder_file);
+    let i_zigmoid_remainder_json: Vec<Value> = from_reader(i_zigmoid_remainder_reader).unwrap();
 
     let candidate_out_filename = root.join("src/lstm/candidate_out.json");
     let candidate_out_file = File::open(candidate_out_filename).unwrap();
@@ -57,6 +77,16 @@ pub fn main() {
     let candidate_remainder_reader = BufReader::new(candidate_remainder_file);
     let candidate_remainder_json: Vec<Value> = from_reader(candidate_remainder_reader).unwrap();
 
+    let candidate_zanh_out_filename = root.join("src/lstm/candidate_zanh_out.json");
+    let candidate_zanh_out_file = File::open(candidate_zanh_out_filename).unwrap();
+    let candidate_zanh_out_reader = BufReader::new(candidate_zanh_out_file);
+    let candidate_zanh_out_json: Vec<Value> = from_reader(candidate_zanh_out_reader).unwrap();
+
+    let candidate_zanh_remainder_filename = root.join("src/lstm/candidate_zanh_remainder.json");
+    let candidate_zanh_remainder_file = File::open(candidate_zanh_remainder_filename).unwrap();
+    let candidate_zanh_remainder_reader = BufReader::new(candidate_zanh_remainder_file);
+    let candidate_zanh_remainder_json: Vec<Value> = from_reader(candidate_zanh_remainder_reader).unwrap();
+
     let o_out_filename = root.join("src/lstm/o_out.json");
     let o_out_file = File::open(o_out_filename).unwrap();
     let o_out_reader = BufReader::new(o_out_file);
@@ -67,6 +97,16 @@ pub fn main() {
     let o_remainder_reader = BufReader::new(o_remainder_file);
     let o_remainder_json: Vec<Value> = from_reader(o_remainder_reader).unwrap();
 
+    let o_zigmoid_out_filename = root.join("src/lstm/o_zigmoid_out.json");
+    let o_zigmoid_out_file = File::open(o_zigmoid_out_filename).unwrap();
+    let o_zigmoid_out_reader = BufReader::new(o_zigmoid_out_file);
+    let o_zigmoid_out_json: Vec<Value> = from_reader(o_zigmoid_out_reader).unwrap();
+
+    let o_zigmoid_remainder_filename = root.join("src/lstm/o_zigmoid_remainder.json");
+    let o_zigmoid_remainder_file = File::open(o_zigmoid_remainder_filename).unwrap();
+    let o_zigmoid_remainder_reader = BufReader::new(o_zigmoid_remainder_file);
+    let o_zigmoid_remainder_json: Vec<Value> = from_reader(o_zigmoid_remainder_reader).unwrap();
+
     let c_out_filename = root.join("src/lstm/c_out.json");
     let c_out_file = File::open(c_out_filename).unwrap();
     let c_out_reader = BufReader::new(c_out_file);
@@ -76,6 +116,16 @@ pub fn main() {
     let c_remainder_file = File::open(c_remainder_filename).unwrap();
     let c_remainder_reader = BufReader::new(c_remainder_file);
     let c_remainder_json: Vec<Value> = from_reader(c_remainder_reader).unwrap();
+
+    let c_zanh_out_filename = root.join("src/lstm/c_zanh_out.json");
+    let c_zanh_out_file = File::open(c_zanh_out_filename).unwrap();
+    let c_zanh_out_reader = BufReader::new(c_zanh_out_file);
+    let c_zanh_out_json: Vec<Value> = from_reader(c_zanh_out_reader).unwrap();
+
+    let c_zanh_remainder_filename = root.join("src/lstm/c_zanh_remainder.json");
+    let c_zanh_remainder_file = File::open(c_zanh_remainder_filename).unwrap();
+    let c_zanh_remainder_reader = BufReader::new(c_zanh_remainder_file);
+    let c_zanh_remainder_json: Vec<Value> = from_reader(c_zanh_remainder_reader).unwrap();
 
     let h_out_filename = root.join("src/lstm/h_out.json");
     let h_out_file = File::open(h_out_filename).unwrap();
@@ -96,16 +146,32 @@ pub fn main() {
     for i in 0..iteration_count {
         let mut json = params.clone();
         json.insert("in".to_string(), in_json[i].clone());
+
         json.insert("f_out".to_string(), f_out_json[i].clone());
         json.insert("f_remainder".to_string(), f_remainder_json[i].clone());
+        json.insert("f_zigmoid_out".to_string(), f_zigmoid_out_json[i].clone());
+        json.insert("f_zigmoid_remainder".to_string(), f_zigmoid_remainder_json[i].clone());
+
         json.insert("i_out".to_string(), i_out_json[i].clone());
         json.insert("i_remainder".to_string(), i_remainder_json[i].clone());
+        json.insert("i_zigmoid_out".to_string(), i_zigmoid_out_json[i].clone());
+        json.insert("i_zigmoid_remainder".to_string(), i_zigmoid_remainder_json[i].clone());
+
         json.insert("candidate_out".to_string(), candidate_out_json[i].clone());
         json.insert("candidate_remainder".to_string(), candidate_remainder_json[i].clone());
+        json.insert("candidate_zanh_out".to_string(), candidate_zanh_out_json[i].clone());
+        json.insert("candidate_zanh_remainder".to_string(), candidate_zanh_remainder_json[i].clone());
+
         json.insert("o_out".to_string(), o_out_json[i].clone());
         json.insert("o_remainder".to_string(), o_remainder_json[i].clone());
+        json.insert("o_zigmoid_out".to_string(), o_zigmoid_out_json[i].clone());
+        json.insert("o_zigmoid_remainder".to_string(), o_zigmoid_remainder_json[i].clone());
+
         json.insert("c_out".to_string(), c_out_json[i].clone());
         json.insert("c_remainder".to_string(), c_remainder_json[i].clone());
+        json.insert("c_zanh_out".to_string(), c_zanh_out_json[i].clone());
+        json.insert("c_zanh_remainder".to_string(), c_zanh_remainder_json[i].clone());
+
         json.insert("h_out".to_string(), h_out_json[i].clone());
         json.insert("h_remainder".to_string(), h_remainder_json[i].clone());
         private_inputs.push(json.clone());

@@ -1,6 +1,8 @@
 pragma circom 2.0.0;
 
 include "../../node_modules/circomlib-ml/circuits/circomlib-matrix/matMul.circom";
+include "../../node_modules/circomlib-ml/circuits/Zanh.circom";
+include "../../node_modules/circomlib-ml/circuits/Zigmoid.circom";
 
 template LSTM (n) { // n is 10 to the number of decimal places
     signal input step_in[6]; // hidden states + cell states
@@ -27,17 +29,32 @@ template LSTM (n) { // n is 10 to the number of decimal places
     signal input i_out[3];
     signal input i_remainder[3];
 
+    signal input i_zigmoid_out[3];
+    signal input i_zigmoid_remainder[3];
+
     signal input f_out[3];
     signal input f_remainder[3];
+
+    signal input f_zigmoid_out[3];
+    signal input f_zigmoid_remainder[3];
 
     signal input candidate_out[3];
     signal input candidate_remainder[3];
 
+    signal input candidate_zanh_out[3];
+    signal input candidate_zanh_remainder[3];
+
     signal input o_out[3];
     signal input o_remainder[3];
 
+    signal input o_zigmoid_out[3];
+    signal input o_zigmoid_remainder[3];
+
     signal input c_out[3];
     signal input c_remainder[3];
+
+    signal input c_zanh_out[3];
+    signal input c_zanh_remainder[3];
 
     signal input h_out[3];
     signal input h_remainder[3];
@@ -76,25 +93,57 @@ template LSTM (n) { // n is 10 to the number of decimal places
     signal c_tmp[3];
     signal h_tmp[3];
 
+    component i_zigmoid[3];
+    component f_zigmoid[3];
+    component candidate_zanh[3];
+    component o_zigmoid[3];
+    component c_zanh[3];
+
     for (var j=0; j<3; j++) {
         i[j] <== in * wi[j] + mat_mul_ui.out[0][j] + bi[j];
         i_out[j] * n + i_remainder[j] === i[j];
 
+        i_zigmoid[j] = Zigmoid(n);
+        i_zigmoid[j].in <== i_out[j];
+        i_zigmoid[j].out <== i_zigmoid_out[j];
+        i_zigmoid[j].remainder <== i_zigmoid_remainder[j];
+
         f[j] <== in * wf[j] + mat_mul_uf.out[0][j] + bf[j];
         f_out[j] * n + f_remainder[j] === f[j];
+
+        f_zigmoid[j] = Zigmoid(n);
+        f_zigmoid[j].in <== f_out[j];
+        f_zigmoid[j].out <== f_zigmoid_out[j];
+        f_zigmoid[j].remainder <== f_zigmoid_remainder[j];
 
         c[j] <== in * wc[j] + mat_mul_uc.out[0][j] + bc[j];
         candidate_out[j] * n + candidate_remainder[j] === c[j];
 
+        candidate_zanh[j] = Zanh(n);
+        candidate_zanh[j].in <== candidate_out[j];
+        candidate_zanh[j].out <== candidate_zanh_out[j];
+        candidate_zanh[j].remainder <== candidate_zanh_remainder[j];
+
         o[j] <== in * wo[j] + mat_mul_uo.out[0][j] + bo[j];
         o_out[j] * n + o_remainder[j] === o[j];
 
-        tmp[j] <== f_out[j]*step_in[j+3];
-        c_tmp[j] <== tmp[j] + i_out[j]*candidate_out[j];
+        o_zigmoid[j] = Zigmoid(n);
+        o_zigmoid[j].in <== o_out[j];
+        o_zigmoid[j].out <== o_zigmoid_out[j];
+        o_zigmoid[j].remainder <== o_zigmoid_remainder[j];
+
+        tmp[j] <== f_zigmoid_out[j]*step_in[j+3];
+        c_tmp[j] <== tmp[j] + i_zigmoid_out[j]*candidate_zanh_out[j];
         c_out[j] * n + c_remainder[j] === c_tmp[j];
+
         step_out[j+3] <== c_out[j];
 
-        h_tmp[j] <== o_out[j] * c_out[j];
+        c_zanh[j] = Zanh(n);
+        c_zanh[j].in <== c_out[j];
+        c_zanh[j].out <== c_zanh_out[j];
+        c_zanh[j].remainder <== c_zanh_remainder[j];
+
+        h_tmp[j] <== o_zigmoid_out[j] * c_zanh_out[j];
         h_out[j] * n + h_remainder[j] === h_tmp[j];
         step_out[j] <== h_out[j];
     }
