@@ -27,15 +27,65 @@ pub fn main() {
     let params_reader = BufReader::new(params_file);
     let params: HashMap<String, Value> = from_reader(params_reader).unwrap();
 
-    let out_filename = root.join("src/lstm/out.json");
-    let out_file = File::open(out_filename).unwrap();
-    let out_reader = BufReader::new(out_file);
-    let out_json: Vec<Value> = from_reader(out_reader).unwrap();
+    let f_out_filename = root.join("src/lstm/f_out.json");
+    let f_out_file = File::open(f_out_filename).unwrap();
+    let f_out_reader = BufReader::new(f_out_file);
+    let f_out_json: Vec<Value> = from_reader(f_out_reader).unwrap();
 
-    let remainder_filename = root.join("src/lstm/remainder.json");
-    let remainder_file = File::open(remainder_filename).unwrap();
-    let remainder_reader = BufReader::new(remainder_file);
-    let remainder_json: Vec<Value> = from_reader(remainder_reader).unwrap();
+    let f_remainder_filename = root.join("src/lstm/f_remainder.json");
+    let f_remainder_file = File::open(f_remainder_filename).unwrap();
+    let f_remainder_reader = BufReader::new(f_remainder_file);
+    let f_remainder_json: Vec<Value> = from_reader(f_remainder_reader).unwrap();
+
+    let i_out_filename = root.join("src/lstm/i_out.json");
+    let i_out_file = File::open(i_out_filename).unwrap();
+    let i_out_reader = BufReader::new(i_out_file);
+    let i_out_json: Vec<Value> = from_reader(i_out_reader).unwrap();
+
+    let i_remainder_filename = root.join("src/lstm/i_remainder.json");
+    let i_remainder_file = File::open(i_remainder_filename).unwrap();
+    let i_remainder_reader = BufReader::new(i_remainder_file);
+    let i_remainder_json: Vec<Value> = from_reader(i_remainder_reader).unwrap();
+
+    let candidate_out_filename = root.join("src/lstm/candidate_out.json");
+    let candidate_out_file = File::open(candidate_out_filename).unwrap();
+    let candidate_out_reader = BufReader::new(candidate_out_file);
+    let candidate_out_json: Vec<Value> = from_reader(candidate_out_reader).unwrap();
+
+    let candidate_remainder_filename = root.join("src/lstm/candidate_remainder.json");
+    let candidate_remainder_file = File::open(candidate_remainder_filename).unwrap();
+    let candidate_remainder_reader = BufReader::new(candidate_remainder_file);
+    let candidate_remainder_json: Vec<Value> = from_reader(candidate_remainder_reader).unwrap();
+
+    let o_out_filename = root.join("src/lstm/o_out.json");
+    let o_out_file = File::open(o_out_filename).unwrap();
+    let o_out_reader = BufReader::new(o_out_file);
+    let o_out_json: Vec<Value> = from_reader(o_out_reader).unwrap();
+
+    let o_remainder_filename = root.join("src/lstm/o_remainder.json");
+    let o_remainder_file = File::open(o_remainder_filename).unwrap();
+    let o_remainder_reader = BufReader::new(o_remainder_file);
+    let o_remainder_json: Vec<Value> = from_reader(o_remainder_reader).unwrap();
+
+    let c_out_filename = root.join("src/lstm/c_out.json");
+    let c_out_file = File::open(c_out_filename).unwrap();
+    let c_out_reader = BufReader::new(c_out_file);
+    let c_out_json: Vec<Value> = from_reader(c_out_reader).unwrap();
+
+    let c_remainder_filename = root.join("src/lstm/c_remainder.json");
+    let c_remainder_file = File::open(c_remainder_filename).unwrap();
+    let c_remainder_reader = BufReader::new(c_remainder_file);
+    let c_remainder_json: Vec<Value> = from_reader(c_remainder_reader).unwrap();
+
+    let h_out_filename = root.join("src/lstm/h_out.json");
+    let h_out_file = File::open(h_out_filename).unwrap();
+    let h_out_reader = BufReader::new(h_out_file);
+    let h_out_json: Vec<Value> = from_reader(h_out_reader).unwrap();
+
+    let h_remainder_filename = root.join("src/lstm/h_remainder.json");
+    let h_remainder_file = File::open(h_remainder_filename).unwrap();
+    let h_remainder_reader = BufReader::new(h_remainder_file);
+    let h_remainder_json: Vec<Value> = from_reader(h_remainder_reader).unwrap();
 
     let in_filename = root.join("src/lstm/in.json");
     let in_file = File::open(in_filename).unwrap();
@@ -46,8 +96,18 @@ pub fn main() {
     for i in 0..iteration_count {
         let mut json = params.clone();
         json.insert("in".to_string(), in_json[i].clone());
-        json.insert("out".to_string(), out_json[i].clone());
-        json.insert("remainder".to_string(), remainder_json[i].clone());
+        json.insert("f_out".to_string(), f_out_json[i].clone());
+        json.insert("f_remainder".to_string(), f_remainder_json[i].clone());
+        json.insert("i_out".to_string(), i_out_json[i].clone());
+        json.insert("i_remainder".to_string(), i_remainder_json[i].clone());
+        json.insert("candidate_out".to_string(), candidate_out_json[i].clone());
+        json.insert("candidate_remainder".to_string(), candidate_remainder_json[i].clone());
+        json.insert("o_out".to_string(), o_out_json[i].clone());
+        json.insert("o_remainder".to_string(), o_remainder_json[i].clone());
+        json.insert("c_out".to_string(), c_out_json[i].clone());
+        json.insert("c_remainder".to_string(), c_remainder_json[i].clone());
+        json.insert("h_out".to_string(), h_out_json[i].clone());
+        json.insert("h_remainder".to_string(), h_remainder_json[i].clone());
         private_inputs.push(json.clone());
     }
 
@@ -115,16 +175,31 @@ pub fn main() {
 
     // println!("{:?}", out_json);
 
-    for i in 0..6 {
+    for i in 0..3 {
         let out;
-        if out_json[11][i].as_str().unwrap().starts_with("-") {
-            let out_str = out_json[11][i].as_str().unwrap()[1..].to_string();
+        if h_out_json[11][i].as_str().unwrap().starts_with("-") {
+            let out_str = h_out_json[11][i].as_str().unwrap()[1..].to_string();
             out = F1::zero() - F1::from_str_vartime(&out_str).unwrap();
         } else {
-            let out_str = out_json[11][i].as_str().unwrap();
+            let out_str = h_out_json[11][i].as_str().unwrap();
             out = F1::from_str_vartime(&out_str).unwrap();
         }
         let diff = out.sub(&result[i]).to_repr();
+        for j in 0..diff.len() {
+            assert_eq!(diff[j], 0);
+        }
+    }
+
+    for i in 0..3 {
+        let out;
+        if c_out_json[11][i].as_str().unwrap().starts_with("-") {
+            let out_str = c_out_json[11][i].as_str().unwrap()[1..].to_string();
+            out = F1::zero() - F1::from_str_vartime(&out_str).unwrap();
+        } else {
+            let out_str = c_out_json[11][i].as_str().unwrap();
+            out = F1::from_str_vartime(&out_str).unwrap();
+        }
+        let diff = out.sub(&result[i+3]).to_repr();
         for j in 0..diff.len() {
             assert_eq!(diff[j], 0);
         }
